@@ -1,0 +1,39 @@
+<blueprint
+        xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0                  http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+    <property-placeholder
+            persistent-id="argo.java.cameltestproject"
+            xmlns="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+            update-strategy="reload">
+        <default-properties>
+            <property name="environmentName" value="UNCONFIGURED"/>
+
+            <property name="source.cron.expression" value="0 0 0 1 * ? 2099"/>
+            <property name="source.cron.autoStart" value="true"/>
+
+            <property name="source.hostname" value="UNCONFIGURED.source.example.org"/>
+            <property name="source.path" value="/UNCONFIGURED/outgoing"/>
+            <property name="source.fileName" value="UNCONFIGUREDFileName"/>
+            <property name="source.username" value="SOURCE"/>
+            <property name="source.privateKeyUri" value="file:///dev/null"/>
+
+            <property name="target.hostname" value="UNCONFIGURED.target.example.org"/>
+            <property name="target.path" value="/UNCONFIGURED/incoming"/>
+            <property name="target.username" value="TARGET"/>
+            <property name="target.privateKeyUri" value="file:///dev/null"/>
+        </default-properties>
+    </property-placeholder>
+    <!-- to setup camel servlet with OSGi HttpService -->
+    <reference id="httpService" interface="org.osgi.service.http.HttpService"/>
+    <bean class="org.apache.camel.component.servlet.osgi.OsgiServletRegisterer"
+          init-method="register" destroy-method="unregister">
+        <property name="alias" value="/rest"/>
+        <property name="httpService" ref="httpService"/>
+        <property name="servlet" ref="camelServlet"/>
+        <property name="servletName" value="camelServletJavaTestProj"/>
+    </bean>
+    <bean id="camelServlet" class="org.apache.camel.component.servlet.CamelHttpTransportServlet"/>
+</blueprint>

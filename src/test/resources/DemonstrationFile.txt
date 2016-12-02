@@ -1,0 +1,32 @@
+<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+    <Body>
+        <QAS_GETQUERYRESULTS_RESP_MSG
+            xmlns="http://xmlns.oracle.com/Enterprise/Tools/schemas/QAS_GETQUERYRESULTS_RESP_MSG.VERSION_1">
+            <query
+                numrows="5"
+                queryname="DEMONSTRATION_QUERY"
+                xmlns="http://xmlns.oracle.com/Enterprise/Tools/schemas/QAS_QUERYRESULTS_XMLP_RESP.VERSION_1">
+                <row rownumber='1'>
+                    <EMPLID>10000000000</EMPLID>
+                    <NAME>Frodo Baggins</NAME>
+                </row>
+                <row rownumber='2'>
+                    <EMPLID>20000000000</EMPLID>
+                    <NAME>Samwise Gamgee</NAME>
+                </row>
+                <row rownumber='3'>
+                    <EMPLID>30000000000</EMPLID>
+                    <NAME>Legolas</NAME>
+                </row>
+                <row rownumber='4'>
+                    <EMPLID>40000000000</EMPLID>
+                    <NAME>Gimli</NAME>
+                </row>
+                <row rownumber='5'>
+                    <EMPLID>50000000000</EMPLID>
+                    <NAME>Boromir</NAME>
+                </row>
+            </query>
+        </QAS_GETQUERYRESULTS_RESP_MSG>
+    </Body>
+</Envelope>
