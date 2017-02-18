@@ -37,14 +37,14 @@ public class CamelTestProjectRoutes extends RouteBuilder {
 				.contextPath("/restjava");
 
 		rest("/route/").get("/{token}")
-				.route().startupOrder(200).routeId("restRouteID")
-				.from("direct:rest")
+				.route().startupOrder(200)
+				.from("direct:rest").routeId("restRouteID")
 				.setBody(simple("${in.header.token}")).id("setRestBody")
 				.log(LoggingLevel.INFO, LOG_NAME, "body:----- ${body}")
 				.to("direct:checkAuth").id("restAuthEnd");
 
 		from("direct:checkAuth").routeId("forLogging")
-				.log(LoggingLevel.INFO, LOG_NAME, "logging body:----- ${body}");
+				.log(LoggingLevel.INFO, LOG_NAME, "logging body from RouteId forLogging:----- ${body}");
 
 		rest("/auth2/").post("/{token}")
 				.route().startupOrder(202).routeId("restRouteID2")

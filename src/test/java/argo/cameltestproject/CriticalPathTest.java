@@ -1,28 +1,20 @@
 package argo.cameltestproject;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import argo.cameltestproject.emplrecord.Record;
+import com.google.common.base.Joiner;
 import org.apache.camel.Exchange;
-import org.apache.camel.LoggingLevel;
-import org.apache.camel.Message;
+import org.apache.camel.builder.AdviceWithBuilder;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
-import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.ProcessorDefinition;
-import org.apache.camel.model.dataformat.BindyType;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import com.google.common.base.Joiner;
-
-import static org.apache.camel.component.stax.StAXBuilder.stax;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CriticalPathTest extends ArgoCamelTestSupport {
 	//region dataDeclaration
@@ -46,20 +38,26 @@ public class CriticalPathTest extends ArgoCamelTestSupport {
 		// TODO: replace the live SFTP routes with injected source, target, and error endpoints as appropriate
 		try {
 			context.getRouteDefinition("restRouteID").adviceWith(context, new AdviceWithRouteBuilder() {
+				public <T extends ProcessorDefinition<?>> AdviceWithBuilder<T> weaveByRoute(String route) {
+					return weaveByToString(".*" + route + "].*");
+				}
+
 				@Override
 				public void configure() throws Exception {
 					// intercept valid messages in this route and replace them with mock
 					replaceFromWith(source2);
 					weaveById("setRestBody").replace().setBody(constant("http://localhost:8181/rest/auth/asdasdasd"));
+					weaveAddLast().to(restTarget);
+					weaveByRoute("direct:checkAuth").replace().to(intermediateDirectRouteMocking);
 //					("http://localhost:8181/rest/auth/c638db5e-5e6c-11e6-84d7-000d3a90c693"));
 				}
 			});
-			context.getRouteDefinition("forLogging").adviceWith(context, new AdviceWithRouteBuilder() {
-				@Override
-				public void configure() throws Exception {
-					// intercept valid messages in this route and replace them with mock
-				}
-			});
+//			context.getRouteDefinition("forLogging").adviceWith(context, new AdviceWithRouteBuilder() {
+//				@Override
+//				public void configure() throws Exception {
+//					// intercept valid messages in this route and replace them with mock
+//				}
+//			});
 
 			context.getRouteDefinition("cronTimerCamelTestingRoutes_RouteId").adviceWith(context, new AdviceWithRouteBuilder() {
 				@Override
@@ -118,6 +116,8 @@ public class CriticalPathTest extends ArgoCamelTestSupport {
 		}
 		template.sendBody(source2, "http://localhost:8181/rest/auth/asdasdasd");
 		template.sendBodyAndHeaders(source, demonstrationTxt, myMap);
+		restTarget.expectedMessageCount(1);
+		intermediateDirectRouteMocking.expectedMessageCount(1);
 		target2.expectedMessageCount(1);
 		target.expectedMessageCount(1);
 		checkHeadersForValidationGradStudents(target.getExchanges());
@@ -209,4 +209,12 @@ public class CriticalPathTest extends ArgoCamelTestSupport {
 		debugAfterMethodCalled = true;
 	}*/
 	// endregion
+
+	//			RouteDefinition forLogging = context.getRouteDefinition("forLogging");
+//
+//			forLogging.adviceWith(context, new AdviceWithRouteBuilder() {
+//				public <T extends ProcessorDefinition<?>> AdviceWithBuilder<T> weaveByRoute(String route) {
+//					return weaveByToString(".*" + route + "].*")
+//				}
+
 }

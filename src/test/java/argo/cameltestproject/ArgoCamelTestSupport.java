@@ -23,10 +23,14 @@ abstract public class ArgoCamelTestSupport extends CamelBlueprintTestSupport {
     @EndpointInject(uri = "direct:cronSource")
     Endpoint cronSource;
 
+    @EndpointInject(uri = "mock:restTarget")
+    MockEndpoint restTarget;
     @EndpointInject(uri = "mock:target")
     MockEndpoint target;
     @EndpointInject(uri = "mock:target2")
     MockEndpoint target2;
+    @EndpointInject(uri = "mock:IntermediateDirectRouteMocking")
+    MockEndpoint intermediateDirectRouteMocking;
     @EndpointInject(uri = "mock:errors")
     MockEndpoint errors;
 
