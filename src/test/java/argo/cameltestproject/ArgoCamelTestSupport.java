@@ -76,4 +76,10 @@ abstract public class ArgoCamelTestSupport extends CamelBlueprintTestSupport {
  */
     abstract protected void addAdvice();
     
+    @Override
+    protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
+        services.put(CacheManagement.class.getName(), asService(new OsgiCacheManagement(), null));
+    }
+    // CacheManagement--Interface; OsgiCacheManagement--Impl
+    // <reference id="cacheManagement"  interface="com.davita.rx.esb.pcidss.cache.svc.CacheManagement" />
 }
